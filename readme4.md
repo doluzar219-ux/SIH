@@ -56,7 +56,7 @@ It is designed to:
 
 ForensiQ operates on a **Dual-Process Isolation Model** to ensure that UI crashes never interrupt low-level raw disk operations. Instead of slow HTTP REST calls for binary data, we utilize **Windows Named Pipes** for zero-overhead, RAM-to-RAM binary streaming.
 
-```text
+``
 ┌──────────────────────────────────────────────────────────┐
 │               BROWSER  http://localhost:3000              │
 │         React 19 + Vite 6.4 + TailwindCSS 4             │
