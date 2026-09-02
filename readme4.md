@@ -104,7 +104,7 @@ Real-time system drive enumeration and health monitoring.
 
 *Apne File Carving (Module 3) se theek pehle jo Module 1 ka table hai, usko isse replace kar de. Isme **Wear-Leveling Bypass** aur **Ghost Protocol (MFT/VSS)** aa gaya hai.*
 
-```markdown
+``
 ### 🧹 Module 1 — Secure Storage Eraser & Ghost Protocol
 
 Military-grade data sanitization with court-admissible audit logging. Standard software tools fail on modern SSDs due to Wear-Leveling and Flash Translation Layers (FTL). ForensiQ bypasses the OS and sends direct hardware instructions.
@@ -133,7 +133,7 @@ Overwriting sectors isn't enough. ForensiQ actively hunts and destroys forensic 
 Recovers deleted/fragmented files from raw storage by scanning binary magic byte signatures.
 
 **How File Carving Works:**
-```
+``
 [Raw Disk / File Stream]
        │
        ▼
@@ -152,22 +152,21 @@ Recovers deleted/fragmented files from raw storage by scanning binary magic byte
        │
        ▼
   Classify: RECOVERED (≥60%) or FRAGMENTED (<60%)
-```
 
-**Supported File Types:** JPEG, PNG, PDF, ZIP, MP4, AVI, DOCX, XLSX, SQLite, EXE/PE, MP3, GIF, BMP, PST, and more.
+
+Supported File Types:** JPEG, PNG, PDF, ZIP, MP4, AVI, DOCX, XLSX, SQLite, EXE/PE, MP3, GIF, BMP, PST, and more.
 
 **Shannon Entropy Formula:**
-```
+
 H(X) = -∑ p(x) · log₂(p(x))
 
 0.0 – 2.0  →  Text / plain data
 5.0 – 7.5  →  Normal binary files
 7.75 – 8.0 →  Encrypted / suspicious
-```
 
----
 
-### 🛡️ Module 3B — YARA Malware & Threat Scanner
+
+🛡️ Module 3B — YARA Malware & Threat Scanner
 
 Scans carved evidence payloads for active malware and threat indicators.
 
@@ -182,17 +181,17 @@ Scans carved evidence payloads for active malware and threat indicators.
 
 Uses compiled `yara-python` if available; auto-falls back to Python `re` regex engine.
 
----
+
 
 ### 🔌 Module 6 — USB Registry Artifact Extractor
 
 Extracts the full history of ALL USB devices ever connected to this Windows machine from the Registry.
 
 **Registry Keys Queried:**
-```
+
 HKLM\SYSTEM\CurrentControlSet\Enum\USBSTOR   ← USB Mass Storage tree
 HKLM\SYSTEM\CurrentControlSet\Enum\USB        ← All USB device classes
-```
+
 
 **For each device, ForensiQ extracts:**
 - ✅ Device Friendly Name (e.g. "SanDisk Cruzer Blade")
@@ -219,9 +218,9 @@ HKLM\SYSTEM\CurrentControlSet\Enum\USB        ← All USB device classes
 **Module 5 — Cryptographic Audit Chain:**
 
 Every forensic operation is logged as a SHA-256 hash-linked block:
-```
+``
 Block[N].chain_hash = SHA-256( Block[N-1].chain_hash || Block[N].sha256_hash )
-```
+`
 
 The genesis block is anchored with 64 zero bytes. Any tampering with a past record causes every subsequent chain hash to fail — mathematically proving tampering.
 
