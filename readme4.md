@@ -52,36 +52,35 @@ It is designed to:
 
 ## 🏗️ Live Architecture
 
-```
+## 🏗️ Live Architecture
+
+ForensiQ operates on a **Dual-Process Isolation Model** to ensure that UI crashes never interrupt low-level raw disk operations. Instead of slow HTTP REST calls for binary data, we utilize **Windows Named Pipes** for zero-overhead, RAM-to-RAM binary streaming.
+
+```text
 ┌──────────────────────────────────────────────────────────┐
 │               BROWSER  http://localhost:3000              │
 │         React 19 + Vite 6.4 + TailwindCSS 4             │
-│                                                          │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐   │
-│  │Dashboard │ │  Secure  │ │   File   │ │   USB    │   │
-│  │  MOD 0   │ │  Eraser  │ │ Carving  │ │ Registry │   │
-│  │ (psutil) │ │  MOD 1   │ │  MOD 3   │ │  MOD 6   │   │
-│  └──────────┘ └──────────┘ └──────────┘ └──────────┘   │
-│                                                          │
-│  ┌────────────────────────────────────────────────────┐  │
-│  │      Audit Reports (MOD 4 + MOD 5)                │  │
-│  │  Gemini AI · Crypto Chain · Legal PDF Generator   │  │
-│  └────────────────────────────────────────────────────┘  │
 └──────────────────────┬───────────────────────────────────┘
-                       │  axios REST API
+                       │  axios REST API (Lightweight JSON)
                        ▼
 ┌──────────────────────────────────────────────────────────┐
-│         FastAPI 0.141+   http://127.0.0.1:8000           │
+│         FastAPI Gateway   [http://127.0.0.1:8000](http://127.0.0.1:8000)          │
+│          (Session State, AI Routing, Dashboard)          │
+└──────────────────────┬───────────────────────────────────┘
+                       │  IPC Named Pipes (\\.\pipe\ForensiQ_Engine)
+                       │  Zero HTTP Overhead / Process Isolation
+                       ▼
+┌──────────────────────────────────────────────────────────┐
+│  forensiq_core.exe (Elevated Native Engine / Privileged) │
 │                                                          │
-│  eraser.py · carving.py · malware_scanner.py             │
-│  classifier.py · reporting.py · usb_forensics.py         │
+│  [ Hardware ATA/NVMe Purge ]  [ MFT/VSS Ghost Protocol ] │
+│  [ Shannon Entropy Carver  ]  [ In-RAM YARA Sandbox    ] │
 │                                                          │
 │  ┌──────────────────────────────────────────────────┐   │
-│  │  vibe_shield.db  (SQLite Blockchain Audit Chain) │   │
+│  │  vibe_shield.db  (SQLite Blockchain Ledger)      │   │
 │  │  SHA-256(prev_hash || payload_hash) per block    │   │
 │  └──────────────────────────────────────────────────┘   │
 └──────────────────────────────────────────────────────────┘
-```
 
 ---
 
@@ -101,26 +100,33 @@ Real-time system drive enumeration and health monitoring.
 
 ---
 
-### 🧹 Module 1 — Secure Storage Eraser
+### ✂️ Copy-Paste Snippet 2: Replace your `🧹 Module 1 — Secure Storage Eraser` Section
 
-Military-grade data sanitization with court-admissible audit logging.
+*Apne File Carving (Module 3) se theek pehle jo Module 1 ka table hai, usko isse replace kar de. Isme **Wear-Leveling Bypass** aur **Ghost Protocol (MFT/VSS)** aa gaya hai.*
 
-| Algorithm | Standard | Passes | Target Media |
-|---|---|---|---|
-| `NIST_800_88_CLEAR` | NIST SP 800-88 Rev.1 (Clear) | 1-pass logical overwrite | Files, general storage |
-| `NIST_800_88_PURGE` | NIST SP 800-88 Rev.1 (Purge) | Crypto-erase command | SSD / NVMe |
-| `DOD_5220_22_M` | DoD 5220.22-M (3-Pass ECE) | 0x00 → 0xFF → Random | Magnetic HDD |
-| `ZERO_FILL` | Single-pass zero-stream | 1-pass 0x00 | Fast volume blanking |
-| `GUTMANN` | Gutmann 35-Pass | 35-pass magnetic overwrite | Legacy magnetic |
-| `SSD_TRIM_PURGE` | Flash-aware block purge | 1-pass | SSD wear-leveling |
+```markdown
+### 🧹 Module 1 — Secure Storage Eraser & Ghost Protocol
+
+Military-grade data sanitization with court-admissible audit logging. Standard software tools fail on modern SSDs due to Wear-Leveling and Flash Translation Layers (FTL). ForensiQ bypasses the OS and sends direct hardware instructions.
+
+| Algorithm | Standard / Target | Execution Methodology |
+|---|---|---|
+| `NIST_800_88_CLEAR` | NIST SP 800-88 Rev.1 | 1-pass logical overwrite for general storage |
+| `DOD_5220_22_M` | DoD 5220.22-M | 3-Pass ECE (0x00 → 0xFF → Random) for HDDs |
+| `ATA_SECURE_ERASE` | SSD / NVMe Bypass | Issues direct `IOCTL_ATA_PASS_THROUGH` to storage controllers to flush over-provisioned NAND cells instantly. |
+
+**The Ghost Protocol (Zero-Trace Metadata Wipe):**
+Overwriting sectors isn't enough. ForensiQ actively hunts and destroys forensic breadcrumbs:
+- 👻 **MFT Slack Wiping:** Scrubs residual file names, timestamps, and cluster pointers from the NTFS Master File Table (`$MFT`).
+- 👻 **VSS Purging:** Executes `vssadmin` hooks to destroy Windows Volume Shadow Copies, eliminating historical system restore snapshots.
 
 **Key Functions:**
-- `detect_storage_type(path)` — Auto-detects SSD vs HDD
-- `overwrite_and_verify_file(path, algorithm)` — Shreds file bytes and verifies post-wipe with SHA-256 comparison
-- `wipe_storage_drive(drive_id, algorithm)` — Volume-level sanitization
-- All operations write immutable hash-linked records to `vibe_shield.db`
-
+- `detect_storage_type(path)` — Auto-detects SSD vs HDD for dynamic algorithm switching.
+- `execute_hardware_purge()` — Bypasses FTL for solid-state media.
+- `wipe_storage_drive(drive_id, algorithm)` — Volume-level sanitization with SHA-256 pre/post verification.
 ---
+
+
 
 ### 🔍 Module 3 — File Carving & Evidence Recovery
 
@@ -265,6 +271,15 @@ Calls `google-genai` Gemini 2.5 Flash to synthesize a 4-sentence executive cyber
 ---
 
 ## 🐍 Backend Modules Deep Dive
+
+###### `forensiq_core.exe` — Native Execution Engine
+- Runs as a standalone, UAC-elevated privileged binary.
+- Communicates directly with the FastAPI gateway via **Windows Named Pipes** (`\\.\pipe\ForensiQ_Engine`).
+- Handles all heavy-lifting: Raw physical disk stream reading, `DeviceIoControl` hardware hooks for ATA wiping, and In-RAM YARA threat scanning.
+
+### `main.py` — FastAPI Application Server
+- FastAPI v1.6.0 acting as the communication gateway.
+- Manages React UI sessions, handles Named Pipe IPC routing to the Core Engine, and polls system health.
 
 ### `main.py` — FastAPI Application Server
 - FastAPI v1.6.0 with CORS middleware for React dev server
