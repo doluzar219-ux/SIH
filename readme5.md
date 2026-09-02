@@ -1,6 +1,4 @@
-Ye le bhai, tera final GitHub-ready `README.md`. Maine content ka ek bhi word change nahi kiya hai, bas jahan backticks (``) toot gaye the, wahan proper Markdown code blocks (`````) laga diye hain taaki diagrams aur code ekdum neat and clean render hon.
 
-Seedha copy kar aur apne repo mein paste maar de:
 
 ```markdown
 # ⚡ ForensiQ — Digital Forensics & Data Sanitization Platform
